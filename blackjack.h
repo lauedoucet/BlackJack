@@ -8,7 +8,7 @@
 
 using namespace std;
 
-enum class Rank {ACE = 1, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINETEN, JACK, QUEEN, KING};
+enum class Rank {ACE = 1, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING};
 enum class Type {CLUBS, DIAMONDS, HEARTS, SPADES};
 
 class Card {
@@ -30,6 +30,7 @@ class Hand {
         vector<Card> m_cards;
 
     public:
+        Hand();
         Hand(vector<Card> pCards);
         void add(Card pCard);
         void clear();
@@ -42,7 +43,9 @@ class Deck {
     private: 
         vector<Card> m_cards;
 
-        Deck() { m_cards = vector<Card>(); }
+        // private constructor creates an empty Deck
+        // allows us to only create a standard 52 Deck
+        Deck(vector<Card>);
     public:
         static Deck Populate();
         void shuffle();
@@ -67,7 +70,7 @@ class HumanPlayer : AbstractPlayer {
 class ComputerPlayer : AbstractPlayer {
     public: 
         ComputerPlayer();
-        virtual bool isDrawing();
+        bool isDrawing();
 };
 
 class BlackJackGame {
