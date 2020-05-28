@@ -36,6 +36,7 @@ class Hand {
         void clear();
         int getTotal();
 
+        // number of cards in the hand
         int getSize() { return m_cards.size(); }
 };
 
@@ -47,6 +48,7 @@ class Deck {
         // allows us to only create a standard 52 Deck
         Deck(vector<Card>);
     public:
+        Deck();
         static Deck Populate();
         void shuffle();
         void deal(Hand pHand);
@@ -56,21 +58,39 @@ class AbstractPlayer {
     protected: 
         Hand m_hand;
     public:
-        virtual bool isDrawing() const = 0;
+        virtual bool isDrawing() = 0;
         virtual bool isBusted();
 };
 
 class HumanPlayer : AbstractPlayer { 
     public:
-        HumanPlayer();
-        bool isDrawing();
+        HumanPlayer(Hand pHand) {
+            m_hand = pHand;
+        }
+
         void announce();
+
+        bool isDrawing() override {
+            // ask player if they would like to draw again
+            bool draw;
+            cout << "Would you like to draw another card? (y/n) " << endl;
+            char answer;
+            cin >> answer;
+            if (answer = 'y') {  draw = true;   }
+            else {     draw = false;   }
+            return draw;
+        }
 };
 
 class ComputerPlayer : AbstractPlayer {
     public: 
-        ComputerPlayer();
-        bool isDrawing();
+        ComputerPlayer(Hand pHand) {
+            m_hand = pHand;
+        }
+
+        bool isDrawing() override {
+            return (m_hand.getTotal() <= 16);
+        }
 };
 
 class BlackJackGame {
@@ -78,7 +98,7 @@ class BlackJackGame {
         Deck m_deck;
         ComputerPlayer m_casino;
     public: 
-        BlackJackGame();
+        BlackJackGame(Deck pDeck, ComputerPlayer pComputer);
         void play();   
 };
 

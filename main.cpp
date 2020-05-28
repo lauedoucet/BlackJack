@@ -10,13 +10,13 @@ int main()
 {
     cout << "\t Welcome to the COMP322 Blackjack game!" << endl << endl;
 
-    // BlackJackGame game;
+    BlackJackGame game;
 
     bool playAgain = true;
     char answer = 'y';
     while (playAgain)
     {
-       // game.play();
+        game.play();
 
         cout << "Would you like another round? (y/n): ";
         cin >> answer;

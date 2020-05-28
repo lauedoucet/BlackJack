@@ -94,7 +94,27 @@ void Deck::shuffle()
 void Deck::deal(Hand pHand)
 {
     // assumption: the deck is already shuffled
-    //this just adds last element in vector to the Hand and deletes it from the Deck
+    // this just adds last element in vector to the Hand and deletes it from the Deck
     pHand.add(m_cards.back());
     m_cards.pop_back();
+}
+
+// method implementation for *Player classes
+bool AbstractPlayer::isBusted() {
+    // busted if total value of cards > 21
+    return (m_hand.getTotal() > 21);
+}
+
+void HumanPlayer::announce() {
+    // tell player if they won, lost or had a push situation (same hand value)
+
+}
+
+BlackJackGame::BlackJackGame(Deck pDeck, ComputerPlayer pComputer) {
+    m_deck = pDeck;
+    m_casino = pComputer;
+}
+
+void BlackJackGame::play() {
+
 }
