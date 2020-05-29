@@ -38,7 +38,7 @@ void Card::displayCard() {
         default : cRank = (int) m_rank;
     }
 
-    cout << cRank << cType << endl;
+    cout << cRank << cType;
 }
 
 // method implementation for Hand class
@@ -62,6 +62,15 @@ int Hand::getTotal() {
     }
 
     return total;
+}
+
+void Hand::displayHand() {
+    for (Card card : m_cards)
+    {
+        card.displayCard();
+        cout << " ";
+    }
+    cout << "[" << (*this).getTotal() << "]";
 }
 
 // method implementation for Deck class
@@ -105,16 +114,80 @@ bool AbstractPlayer::isBusted() {
     return (m_hand.getTotal() > 21);
 }
 
-void HumanPlayer::announce() {
-    // tell player if they won, lost or had a push situation (same hand value)
-
+void AbstractPlayer::addHand(Hand p_hand) {
+    m_hand = p_hand;
 }
 
-BlackJackGame::BlackJackGame(Deck pDeck, ComputerPlayer pComputer) {
-    m_deck = pDeck;
-    m_casino = pComputer;
+Hand AbstractPlayer::getHand() {
+    return m_hand;
+}
+
+void HumanPlayer::announce(const char* message) {
+    // logs if player won, lost or had a push situation (same hand value)
+    // (kinda useless but required in the assignment)
+    cout << message << endl;
 }
 
 void BlackJackGame::play() {
+    // create casino and player
+    ComputerPlayer casino = ComputerPlayer();
+    casino.addHand(Hand());
+    (*this).addCasino(casino);
+    HumanPlayer player = HumanPlayer();
+    player.addHand(Hand());
 
+    // create Deck and shuffle
+    Deck deck = Deck();
+    deck.Populate();
+    deck.shuffle();
+    (*this).addDeck(deck);
+
+    // deal and display cards to computer (1) and player (2)
+    deck.deal(casino.getHand());
+    cout << "Casino: ";
+    casino.getHand().displayHand();
+    cout << endl;
+
+    deck.deal(player.getHand());
+    deck.deal(player.getHand());
+    cout << "Player: ";
+    player.getHand().displayHand();
+    cout << endl;
+
+    // ask if player wants to draw, loop until they don't want to draw anymore or are busted (immediately lose)
+    while(player.isDrawing())
+    {
+        deck.deal(player.getHand());
+        cout << "Player: ";
+        player.getHand().displayHand();
+        cout << endl;
+    }
+
+    if (player.isBusted()) {
+        player.announce("Player busts.");
+    } else {
+        // computer draws until not able to
+        while (casino.isDrawing()) {
+            deck.deal(casino.getHand());
+            cout << "Casino: ";
+            casino.getHand().displayHand();
+            cout << endl;
+        }
+
+        if (casino.isBusted())
+        {
+            // if computer busts = player wins
+            player.announce("Casino busts. /nPlayer wins.");
+        } else {
+            // compare values of player and computer and announce result
+            if (player.getHand().getTotal() == casino.getHand().getTotal())
+            {
+                player.announce("Push: no one wins.");
+            } else if (player.getHand().getTotal() > casino.getHand().getTotal()) {
+                player.announce("Player wins.");
+            } else {
+                player.announce("Casino wins.");
+            }
+        }
+    }
 }
