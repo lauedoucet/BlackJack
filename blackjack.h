@@ -2,6 +2,7 @@
 	Copyright 2020, Laurence Doucet, All rights reserved
 */
 
+#include <iostream>
 #include <vector>
 #ifndef BLACKJACK_H
 #define BLACKJACK_H
@@ -20,9 +21,8 @@ class Card {
         Card(Rank pRank, Type pType);
         int getValue();
         void displayCard();
-
-        Rank getRank() { return m_rank; }
-        Type getType() { return m_type; }
+        Rank getRank();
+        Type getType();
 };
 
 class Hand {
@@ -31,14 +31,13 @@ class Hand {
 
     public:
         Hand();
-        Hand(vector<Card> pCards);
-        void add(Card pCard);
+        Hand(vector<Card>);
+        void add(Card);
         void clear();
         int getTotal();
         void displayHand();
-
         // number of cards in the hand
-        int getSize() { return m_cards.size(); }
+        int getSize();
 };
 
 class Deck {
@@ -52,7 +51,7 @@ class Deck {
         Deck();
         static Deck Populate();
         void shuffle();
-        void deal(Hand pHand);
+        void deal(Hand);
 };
 
 class AbstractPlayer {
@@ -70,31 +69,13 @@ class HumanPlayer : public AbstractPlayer {
     public:
         HumanPlayer();
         void announce(const char*);
-
-        bool isDrawing() override {
-            // check if they are busted first!
-            if ((*this).isBusted()) {
-                return false;
-            } else {
-                // ask player if they would like to draw again
-                bool draw;
-                cout << "Do you want to draw? (y/n) " << endl;
-                char answer;
-                cin >> answer;
-                if (answer = 'y') {     draw = true;   }
-                else {     draw = false;   }
-                return draw;
-            }
-        }
+        bool isDrawing();
 };
 
 class ComputerPlayer : public AbstractPlayer {
     public: 
         ComputerPlayer();
-
-        bool isDrawing() override {
-            return (m_hand.getTotal() <= 16);
-        }
+        bool isDrawing();
 };
 
 class BlackJackGame {
@@ -102,17 +83,11 @@ class BlackJackGame {
         Deck m_deck;
         ComputerPlayer m_casino;
 
-    public: 
+    public:
         BlackJackGame();
         void play();
-
-        void addCasino(ComputerPlayer p_casino) {
-            m_casino = p_casino;
-        }
-
-        void addDeck(Deck p_deck) {
-            m_deck = p_deck;
-        }
+        void addCasino(ComputerPlayer);
+        void addDeck(Deck);
 };
 
 #endif

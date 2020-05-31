@@ -2,8 +2,8 @@
 	Copyright 2020, Laurence Doucet, All rights reserved
 */
 
-#include <iostream>
 #include "blackjack.cpp"
+//#include "blackjack.h"
 using namespace std;
 
 int main()

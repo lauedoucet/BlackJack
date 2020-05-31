@@ -3,9 +3,10 @@
 */
 
 #include "blackjack.h"
-#include <iostream>
 #include <algorithm> 
 #include <random>
+
+using namespace std;
 
 // method implementations for Card class
 Card::Card(Rank pRank, Type pType) {
@@ -41,6 +42,10 @@ void Card::displayCard() {
     cout << cRank << cType;
 }
 
+Rank Card::getRank() { return m_rank; }
+
+Type Card::getType() { return m_type; }
+
 // method implementation for Hand class
 Hand::Hand() 
 {   m_cards = vector<Card>();   }
@@ -73,12 +78,16 @@ void Hand::displayHand() {
     cout << "[" << (*this).getTotal() << "]";
 }
 
+int Hand::getSize() { return m_cards.size(); }
+
 // method implementation for Deck class
 Deck::Deck(vector<Card> pCards) {
     m_cards = pCards;
 }
 
-Deck Deck::Populate() 
+Deck::Deck() {}
+
+Deck Deck::Populate()
 {
     vector<Card> pCards = vector<Card>();
     // building our card vector with one of each card
@@ -122,10 +131,45 @@ Hand AbstractPlayer::getHand() {
     return m_hand;
 }
 
+HumanPlayer::HumanPlayer() {}
+
+bool HumanPlayer::isDrawing() {
+    // check if they are busted first!
+    if ((*this).isBusted()) {
+        return false;
+    }
+    else {
+        // ask player if they would like to draw again
+        bool draw;
+        cout << "Do you want to draw? (y/n) " << endl;
+        char answer;
+        cin >> answer;
+        if (answer == 'y') { draw = true; }
+        else { draw = false; }
+        return draw;
+    }
+}
+
 void HumanPlayer::announce(const char* message) {
     // logs if player won, lost or had a push situation (same hand value)
     // (kinda useless but required in the assignment)
     cout << message << endl;
+}
+
+ComputerPlayer::ComputerPlayer() {}
+
+bool ComputerPlayer::isDrawing() {
+    return (m_hand.getTotal() <= 16);
+}
+
+BlackJackGame::BlackJackGame() {}
+
+void BlackJackGame::addCasino(ComputerPlayer p_casino) {
+    m_casino = p_casino;
+}
+
+void BlackJackGame::addDeck(Deck p_deck) {
+    m_deck = p_deck;
 }
 
 void BlackJackGame::play() {
