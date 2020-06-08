@@ -36,6 +36,7 @@ class Hand {
         void clear();
         int getTotal();
         void displayHand();
+
         // number of cards in the hand
         int getSize();
 };
@@ -44,12 +45,10 @@ class Deck {
     private: 
         vector<Card> m_cards;
 
-        // private constructor creates an empty Deck
-        // allows us to only create a standard 52 Deck
-        Deck(vector<Card>);
     public:
         Deck();
-        static Deck Populate();
+        Deck(vector<Card>);
+        void Populate();
         void shuffle();
         void deal(Hand);
 };

@@ -87,7 +87,7 @@ Deck::Deck(vector<Card> pCards) {
 
 Deck::Deck() {}
 
-Deck Deck::Populate()
+void Deck::Populate()
 {
     vector<Card> pCards = vector<Card>();
     // building our card vector with one of each card
@@ -99,8 +99,9 @@ Deck Deck::Populate()
             pCards.push_back(Card(rank, type));
         }
     }
+    m_cards = pCards;
     Deck deck = Deck(pCards);
-    return deck;
+    //return deck;
 }
 
 void Deck::shuffle() 
