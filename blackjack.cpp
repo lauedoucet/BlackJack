@@ -5,142 +5,160 @@
 #include "blackjack.h"
 #include <algorithm> 
 #include <random>
+#include <chrono>
 
 using namespace std;
 
-// method implementations for Card class
-Card::Card(Rank pRank, Type pType) {
-    m_rank = pRank;
-    m_type = pType;
+/***************************Card Class Implementation**************************/ 
+Card::Card(const Rank &p_rank, const Type &p_type) {
+    m_rank = p_rank;
+    m_type = p_type;
 }
 
+// Returns value of card according to rank
+// Ace will always return one, value will be changed according to context
 int Card::getValue() {
-    // Ace will always return one, value will be changed according to context
     int value;
     if (m_rank == Rank::JACK || m_rank == Rank::QUEEN || m_rank == Rank::KING) { value = 10; }
     else { value = (int) m_rank; }
     return value;
 }
 
-void Card::displayCard() {
-    char cType;
+// Prints card rank and type
+void Card::displayCard() const {
+    char c_type;
     switch(m_type) {
-        case Type::CLUBS : cType = 'C'; break;
-        case Type::DIAMONDS : cType = 'D'; break;
-        case Type::HEARTS : cType = 'H'; break;
-        case Type::SPADES : cType = 'S'; break;
+        case Type::CLUBS : c_type = 'C'; break;
+        case Type::DIAMONDS : c_type = 'D'; break;
+        case Type::HEARTS : c_type = 'H'; break;
+        case Type::SPADES : c_type = 'S'; break;
     }
 
-    char cRank;
+    char c_rank;
     switch(m_rank) {
-        case Rank::JACK : cRank = 'J'; break;
-        case Rank::QUEEN : cRank = 'Q'; break;
-        case Rank::KING : cRank = 'K'; break;
-        default : cRank = (int) m_rank;
+    case Rank::JACK: c_rank = 'J'; cout << c_rank; break;
+        case Rank::QUEEN : c_rank = 'Q'; cout << c_rank; break;
+        case Rank::KING : c_rank = 'K'; cout << c_rank; break;
+        default: int rank = (int)m_rank; cout << rank;
     }
 
-    cout << cRank << cType;
+    cout << c_type;
 }
 
-Rank Card::getRank() { return m_rank; }
+Rank Card::getRank() const { return m_rank; }
 
-Type Card::getType() { return m_type; }
+Type Card::getType() const { return m_type; }
 
-// method implementation for Hand class
+
+/**********************Hand Class Implementation************************/
 Hand::Hand() 
 {   m_cards = vector<Card>();   }
 
-Hand::Hand(vector<Card> pCards)
-{   m_cards = pCards;   }
+Hand::Hand(const vector<Card> &p_cards)
+{   m_cards = p_cards;   }
 
-void Hand::add(Card pCard)
-{   m_cards.push_back(pCard);   }
+// Appends p_card at the end of m_cards
+void Hand::add(const Card &p_card)
+{   m_cards.push_back(p_card);   }
 
+// Empties m_cards
 void Hand::clear()
 {   m_cards.clear();    }
 
+// Returns total value of Hand = sum of values based on rank
 int Hand::getTotal() {
     int total = 0;
     for (Card card : m_cards)
     {
-        total =+ card.getValue();
+        total = total + card.getValue();
     }
 
     return total;
 }
 
+// Displays all cards as a list with the total Hand value
 void Hand::displayHand() {
     for (Card card : m_cards)
     {
         card.displayCard();
         cout << " ";
     }
-    cout << "[" << (*this).getTotal() << "]";
+    cout << "[" << getTotal() << "]" << endl;
 }
 
+// Returns the number of cards in m_cards
 int Hand::getSize() { return m_cards.size(); }
 
-// method implementation for Deck class
-Deck::Deck(vector<Card> pCards) {
-    m_cards = pCards;
+
+/*************************Deck Class Implementation**************************/ 
+Deck::Deck() {
+    m_cards = vector<Card>();
+}
+Deck::Deck(const vector<Card> &p_cards) {   
+    m_cards = p_cards;
 }
 
-Deck::Deck() {}
-
+// Changes m_cards to a standard 52 card deck, not shuffled
 void Deck::Populate()
 {
-    vector<Card> pCards = vector<Card>();
+    vector<Card> p_cards = vector<Card>();
     // building our card vector with one of each card
     for (int i=0; i<4; i++)
     {
         for (int j=1; j<14; j++) {
             Rank rank = static_cast<Rank>(j);
             Type type = static_cast<Type>(i);
-            pCards.push_back(Card(rank, type));
+            p_cards.push_back(Card(rank, type));
         }
     }
-    m_cards = pCards;
-    Deck deck = Deck(pCards);
-    //return deck;
+    m_cards = p_cards;
 }
 
+// Shuffles the deck through m_cards using a random_number_engine that uses current time as a seed
 void Deck::shuffle() 
 {
     auto rng = default_random_engine {};
+    rng.seed(time(0));
     std::shuffle(m_cards.begin(), m_cards.end(), rng);
 }
 
-void Deck::deal(Hand pHand)
+// Removes one card from the back of the deck and returns it
+// Assumes that the deck is already shuffled
+Card Deck::deal()
 {
-    // assumption: the deck is already shuffled
-    // this just adds last element in vector to the Hand and deletes it from the Deck
-    pHand.add(m_cards.back());
+    // back returns a reference so we need to return a copy of the card
+    Card ref = m_cards.back();
+    Card card = Card(ref.getRank(), ref.getType());
     m_cards.pop_back();
+    return card;
 }
 
-// method implementation for *Player classes
+
+/************************AbstractPlayer Class Implementation*******************/
+
+// Returns true if the total value of the Hand is > 21
 bool AbstractPlayer::isBusted() {
-    // busted if total value of cards > 21
     return (m_hand.getTotal() > 21);
 }
 
-void AbstractPlayer::addHand(Hand p_hand) {
+void AbstractPlayer::addHand(const Hand &p_hand) {
     m_hand = p_hand;
 }
 
-Hand AbstractPlayer::getHand() {
+Hand& AbstractPlayer::getHand() {
     return m_hand;
 }
 
+
+/*************************HumanPlayer Class Implementation***********************/
 HumanPlayer::HumanPlayer() {}
 
+// Returns true if player is not busted and wants to draw
 bool HumanPlayer::isDrawing() {
-    // check if they are busted first!
-    if ((*this).isBusted()) {
+    if (isBusted()) {
         return false;
     }
     else {
-        // ask player if they would like to draw again
         bool draw;
         cout << "Do you want to draw? (y/n) " << endl;
         char answer;
@@ -151,50 +169,54 @@ bool HumanPlayer::isDrawing() {
     }
 }
 
+// Displays whether the player won or not (useless, based on assigment instructions)
 void HumanPlayer::announce(const char* message) {
-    // logs if player won, lost or had a push situation (same hand value)
-    // (kinda useless but required in the assignment)
     cout << message << endl;
 }
 
+
+/*************************HumanPlayer Class Implementation***********************/
 ComputerPlayer::ComputerPlayer() {}
 
+// Returns true if total value of hand is <= 16
 bool ComputerPlayer::isDrawing() {
     return (m_hand.getTotal() <= 16);
 }
 
+
+/***********************BlackJackGame Class Implementation**********************/
 BlackJackGame::BlackJackGame() {}
 
-void BlackJackGame::addCasino(ComputerPlayer p_casino) {
+void BlackJackGame::addCasino(const ComputerPlayer &p_casino) {
     m_casino = p_casino;
 }
 
-void BlackJackGame::addDeck(Deck p_deck) {
+void BlackJackGame::addDeck(const Deck &p_deck) {
     m_deck = p_deck;
 }
 
+// Sets up game (casino, player and deck) and executes game loop
 void BlackJackGame::play() {
+
     // create casino and player
     ComputerPlayer casino = ComputerPlayer();
-    casino.addHand(Hand());
-    (*this).addCasino(casino);
+    addCasino(casino);
     HumanPlayer player = HumanPlayer();
-    player.addHand(Hand());
 
     // create Deck and shuffle
     Deck deck = Deck();
     deck.Populate();
     deck.shuffle();
-    (*this).addDeck(deck);
+    addDeck(deck);
 
     // deal and display cards to computer (1) and player (2)
-    deck.deal(casino.getHand());
+    casino.getHand().add(deck.deal());
     cout << "Casino: ";
     casino.getHand().displayHand();
     cout << endl;
 
-    deck.deal(player.getHand());
-    deck.deal(player.getHand());
+    player.getHand().add(deck.deal());
+    player.getHand().add(deck.deal());
     cout << "Player: ";
     player.getHand().displayHand();
     cout << endl;
@@ -202,7 +224,7 @@ void BlackJackGame::play() {
     // ask if player wants to draw, loop until they don't want to draw anymore or are busted (immediately lose)
     while(player.isDrawing())
     {
-        deck.deal(player.getHand());
+        player.getHand().add(deck.deal());
         cout << "Player: ";
         player.getHand().displayHand();
         cout << endl;
@@ -213,7 +235,7 @@ void BlackJackGame::play() {
     } else {
         // computer draws until not able to
         while (casino.isDrawing()) {
-            deck.deal(casino.getHand());
+            casino.getHand().add(deck.deal());
             cout << "Casino: ";
             casino.getHand().displayHand();
             cout << endl;
@@ -222,7 +244,7 @@ void BlackJackGame::play() {
         if (casino.isBusted())
         {
             // if computer busts = player wins
-            player.announce("Casino busts. /nPlayer wins.");
+            player.announce("Casino busts. Player wins.");
         } else {
             // compare values of player and computer and announce result
             if (player.getHand().getTotal() == casino.getHand().getTotal())

@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <vector>
+
 #ifndef BLACKJACK_H
 #define BLACKJACK_H
 
@@ -14,30 +15,28 @@ enum class Type {CLUBS, DIAMONDS, HEARTS, SPADES};
 
 class Card {
     private:
-        Rank m_rank;
-        Type m_type;
+         Rank m_rank;
+         Type m_type;
 
     public:
-        Card(Rank pRank, Type pType);
+        Card(const Rank&, const Type&);
         int getValue();
-        void displayCard();
-        Rank getRank();
-        Type getType();
+        void displayCard() const;
+        Rank getRank() const;
+        Type getType() const;
 };
 
 class Hand {
     private: 
-        vector<Card> m_cards;
+        mutable vector<Card> m_cards;
 
     public:
         Hand();
-        Hand(vector<Card>);
-        void add(Card);
+        Hand(const vector<Card>&);
+        void add(const Card&);
         void clear();
         int getTotal();
         void displayHand();
-
-        // number of cards in the hand
         int getSize();
 };
 
@@ -47,10 +46,10 @@ class Deck {
 
     public:
         Deck();
-        Deck(vector<Card>);
+        Deck(const vector<Card>&);
         void Populate();
         void shuffle();
-        void deal(Hand);
+        Card deal();
 };
 
 class AbstractPlayer {
@@ -60,8 +59,8 @@ class AbstractPlayer {
     public:
         virtual bool isDrawing() = 0;
         virtual bool isBusted();
-        virtual void addHand(Hand);
-        virtual Hand getHand();
+        virtual void addHand(const Hand&);
+        virtual Hand& getHand();
 };
 
 class HumanPlayer : public AbstractPlayer { 
@@ -85,8 +84,8 @@ class BlackJackGame {
     public:
         BlackJackGame();
         void play();
-        void addCasino(ComputerPlayer);
-        void addDeck(Deck);
+        void addCasino(const ComputerPlayer&);
+        void addDeck(const Deck&);
 };
 
 #endif
