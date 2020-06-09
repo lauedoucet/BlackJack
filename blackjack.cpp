@@ -103,9 +103,9 @@ void Deck::Populate()
 {
     vector<Card> p_cards = vector<Card>();
     // building our card vector with one of each card
-    for (int i=0; i<4; i++)
+    for (int i = 0; i < 4; i++)
     {
-        for (int j=1; j<14; j++) {
+        for (int j = 1; j < 14; j++) {
             Rank rank = static_cast<Rank>(j);
             Type type = static_cast<Type>(i);
             p_cards.push_back(Card(rank, type));
