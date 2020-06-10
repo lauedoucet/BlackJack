@@ -106,6 +106,24 @@ void Hand::displayHand() {
 // Returns the number of cards in m_cards
 int Hand::getSize() { return m_cards.size(); }
 
+bool Hand::hasPair() {
+
+    bool pair_found = false;
+
+    for (Card card_outer : m_cards) {
+        for (Card card_inner : m_cards) {
+            if (card_outer.getRank() == card_inner.getRank() && card_outer.getType() != card_inner.getType()) {
+                pair_found = true;
+                break;
+            }
+        }
+
+        if (pair_found) { break; }
+    }
+    
+    return pair_found;
+}
+
 
 /*************************Deck Class Implementation**************************/ 
 Deck::Deck() {
@@ -195,6 +213,27 @@ void HumanPlayer::announce(const char* message) {
     cout << message << endl << endl;
 }
 
+void HumanPlayer::doubleDown() {
+
+}
+
+void HumanPlayer::split() {
+    // create second hand
+    cout << "Splitting....." << endl;
+}
+
+// Asks player to input their bet amount
+void HumanPlayer::requestBet() {
+    double current_bet = getBet();
+    double reset_bet = 0;
+    cout << "Please enter your bet amount: ";
+    cin >> reset_bet;
+    cout << endl;
+    setBet(reset_bet);
+    double current_balance = getBalance();
+    setBalance(current_balance - (reset_bet - current_bet));
+}
+
 void HumanPlayer::setBet(double amount) {
     m_bet = amount;
 }
@@ -278,8 +317,20 @@ void BlackJackGame::play() {
         m_player.setBet(m_player.getBet() * 2.5);
         m_player.announce("BlackJack! Player wins.");
         m_player.displayBet();
-    }
-    else {
+    } else if (getPlayer().getHand().hasPair()) {
+
+        // ask player is they want to split
+        char answ;
+        cout << "Would you like to split? (y/n):";
+        cin >> answ;
+        cout << endl;
+        if (answ == 'y') {
+            getPlayer().split();
+        }
+
+    } else {
+
+        // ask player if they would like to double down
         // ask if player wants to draw, loop until they don't want to draw anymore or are busted (immediately lose)
         while (m_player.isDrawing())
         {
@@ -293,9 +344,7 @@ void BlackJackGame::play() {
             m_player.setBet(0);
             m_player.announce("Player busts.");
             m_player.displayBet();
-        }
-
-        else {
+        } else {
             // computer draws until not able to
             while (m_casino.isDrawing()) {
                 m_casino.getHand().add(deck.deal());
@@ -310,8 +359,9 @@ void BlackJackGame::play() {
                 m_player.setBet(m_player.getBet() * 2);
                 m_player.announce("Casino busts. Player wins.");
                 m_player.displayBet();
-            }
-            else {
+
+            } else {
+
                 // compare values of player and computer and announce result
                 if (m_player.getHand().getTotal() == m_casino.getHand().getTotal())
                 {

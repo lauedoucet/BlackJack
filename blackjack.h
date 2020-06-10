@@ -38,6 +38,7 @@ class Hand {
         int getTotal();
         void displayHand();
         int getSize();
+        bool hasPair();
 };
 
 class Deck {
@@ -67,13 +68,19 @@ class HumanPlayer : public AbstractPlayer {
     private:
         double m_bet;
         double m_balance;
+
     public:
         HumanPlayer();
         void announce(const char*);
         bool isDrawing();
+        void doubleDown();
+        void split();
+
+        void requestBet();
         void setBet(double);
         double getBet();
         void displayBet();
+
         void setBalance(double);
         double getBalance();
         void displayBalance();
@@ -96,9 +103,9 @@ class BlackJackGame {
         void play();
         void addCasino(const ComputerPlayer&);
         void addPlayer(const HumanPlayer&);
-        void addDeck(const Deck&);
         ComputerPlayer& getCasino();
         HumanPlayer& getPlayer();
+        void addDeck(const Deck&);
 };
 
 #endif
