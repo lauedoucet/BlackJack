@@ -54,7 +54,7 @@ class Deck {
 
 class AbstractPlayer {
     protected: 
-        Hand m_hand;
+        mutable Hand m_hand;
 
     public:
         virtual bool isDrawing() = 0;
@@ -64,10 +64,16 @@ class AbstractPlayer {
 };
 
 class HumanPlayer : public AbstractPlayer { 
+    private:
+        double m_bet;
     public:
         HumanPlayer();
+        HumanPlayer(double);
         void announce(const char*);
         bool isDrawing();
+        void setBet(double);
+        double getBet();
+        void displayBet();
 };
 
 class ComputerPlayer : public AbstractPlayer {
@@ -80,11 +86,13 @@ class BlackJackGame {
     private:
         Deck m_deck;
         ComputerPlayer m_casino;
+        HumanPlayer m_player;
 
     public:
         BlackJackGame();
         void play();
         void addCasino(const ComputerPlayer&);
+        void addPlayer(const HumanPlayer&);
         void addDeck(const Deck&);
 };
 
