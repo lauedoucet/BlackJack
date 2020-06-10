@@ -168,9 +168,10 @@ Hand& AbstractPlayer::getHand() {
 
 
 /*************************HumanPlayer Class Implementation***********************/
-HumanPlayer::HumanPlayer() { m_bet = 0; }
-
-HumanPlayer::HumanPlayer(double p_bet) { m_bet = p_bet; }
+HumanPlayer::HumanPlayer() { 
+    m_bet = 0;
+    m_balance = 500;
+}
 
 // Returns true if player is not busted and wants to draw
 bool HumanPlayer::isDrawing() {
@@ -179,9 +180,10 @@ bool HumanPlayer::isDrawing() {
     }
     else {
         bool draw;
-        cout << "Do you want to draw? (y/n) " << endl;
+        cout << "Do you want to draw? (y/n) ";
         char answer;
         cin >> answer;
+        cout << endl;
         if (answer == 'y') { draw = true; }
         else { draw = false; }
         return draw;
@@ -190,7 +192,7 @@ bool HumanPlayer::isDrawing() {
 
 // Displays whether the player won or not (useless, based on assigment instructions)
 void HumanPlayer::announce(const char* message) {
-    cout << message << endl;
+    cout << message << endl << endl;
 }
 
 void HumanPlayer::setBet(double amount) {
@@ -202,7 +204,19 @@ double HumanPlayer::getBet() {
 }
 
 void HumanPlayer::displayBet() {
-    cout << "You current bet is: " << m_bet << endl;
+    cout << "You current bet is: " << m_bet << endl << endl;
+}
+
+void HumanPlayer::setBalance(double p_balance) {
+    m_balance = p_balance;
+}
+
+double HumanPlayer::getBalance() {
+    return m_balance;
+}
+
+void HumanPlayer::displayBalance() {
+    cout << "Your current balance is: " << m_balance << endl << endl;
 }
 
 /*************************HumanPlayer Class Implementation***********************/
@@ -227,6 +241,14 @@ void BlackJackGame::addPlayer(const HumanPlayer& p_player) {
 
 void BlackJackGame::addDeck(const Deck &p_deck) {
     m_deck = p_deck;
+}
+
+ComputerPlayer& BlackJackGame::getCasino() {
+    return m_casino;
+}
+
+HumanPlayer& BlackJackGame::getPlayer() {
+    return m_player;
 }
 
 // Sets up game (casino, player and deck) and executes game loop
